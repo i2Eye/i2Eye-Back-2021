@@ -3,3 +3,17 @@ The backend of i2Eye uses the following:
 1. Python 3.8.1 (https://www.python.org/ftp/python/3.8.1/python-3.8.1.exe)
 2. Flask - A web app framework running on python (https://github.com/pallets/flask)
 3. ElasticSearch - HTTP search engine (https://www.elastic.co/downloads/elasticsearch)
+4. Conda - Virtual Environment Manager for managing dependencies (https://docs.anaconda.com/anaconda/install/)
+
+## How to Setup the Back-end Environment
+Step 1: Install Anaconda, so that depencencies in Python can be seperately managed (skip this step if you already have a virtual environment manager)
+Step 2: After installation, run Anaconda Prompt and create the virtual environment for i2eye using the following commands:
+```
+conda update --all
+conda create --name i2eye python=3.8.1 flask elasticsearch
+```
+This will create our python virtual environment with flask and elasticsearch. Then, activate the environment using:
+```
+conda activate i2eye
+```
+The environment is now set-up. To run your python scripts, run `python your_code.py` within Anaconda Prompt.

@@ -7,6 +7,7 @@ The backend of i2Eye uses the following:
 
 ## How to Setup the Back-end Environment
 Step 1: Install Anaconda, so that depencencies in Python can be seperately managed (skip this step if you already have a virtual environment manager)
+
 Step 2: After installation, run Anaconda Prompt and create the virtual environment for i2eye using the following commands:
 ```
 conda update --all

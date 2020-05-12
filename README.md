@@ -18,3 +18,4 @@ This will create our python virtual environment with flask and elasticsearch. Th
 conda activate i2eye
 ```
 The environment is now set-up. To run your python scripts, run `python your_code.py` within Anaconda Prompt.
+For more useful Anaconda commands, refer to the cheatsheet at https://docs.conda.io/projects/conda/en/latest/_downloads/843d9e0198f2a193a3484886fa28163c/conda-cheatsheet.pdf

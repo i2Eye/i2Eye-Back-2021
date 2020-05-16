@@ -11,7 +11,7 @@ Step 1: Install Anaconda, so that depencencies in Python can be seperately manag
 Step 2: After installation, run Anaconda Prompt and create the virtual environment for i2eye using the following commands:
 ```
 conda update --all
-conda create --name i2eye python=3.8.1 flask elasticsearch
+conda create --name i2eye python=3.8.1 flask=1.1.2 ... (all other packages on requirements.txt)
 ```
 This will create our python virtual environment with flask and elasticsearch. Then, activate the environment using:
 ```

@@ -1,9 +1,12 @@
 # DB connection
+import os
 import psycopg2
 from psycopg2 import Error, extras
 import csv
 import json
-import requests
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from flask import Flask, request
 app = Flask(__name__)
@@ -687,11 +690,7 @@ def connect_db():
     #                               host="ec2-35-173-94-156.compute-1.amazonaws.com",
     #                               port="5432",
     #                               database="dbpduk6f0fbp8q")
-    connection = psycopg2.connect(user="postgres",
-                                  password="P@ssw0rd",
-                                  host="localhost",
-                                  port="5432",
-                                  database="postgres")
+    connection = psycopg2.connect(os.environ.get("DB_URI"))
     return connection
 
 # Create station table

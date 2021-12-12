@@ -16,4 +16,5 @@ pip install -r requirements.txt -r requirements-dev.txt
 ```
 
 2. Copy the contents of `.env.example` into a new file named `.env`. This file is used to provision environment variables and other secrets.
-3. From the root directory, run `docker-compose up -d`. This will spin up two Postgres containers, one for developing, and one for testing. The test database is bound to port 5433, and the dev database is bound to port 5432.
+3. From the root directory, run `docker-compose up -d`. This will spin up two Postgres containers, one for developing, and one for testing. The dev database is bound to port 5432, and the test database is bound to port 5433.
+4. To start the Flask application, use `flask run`.

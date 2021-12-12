@@ -1,4 +1,4 @@
 .PHONY: fmt
 fmt:
-	python -m black . --exclude=.data/ --exclude=venv/
-	python -m isort .
+	python -m black api
+	python -m isort api --profile=black

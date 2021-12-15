@@ -80,7 +80,10 @@ def create_question(conn: connection):
 
     create_questions_table_query = """CREATE TABLE IF NOT EXISTS question
                   (question_id SERIAL PRIMARY KEY,
+                  question_num INTEGER,
                   question TEXT,
+                  required BOOLEAN,
+                  options varchar[],
                   station_id INTEGER,
                   type_id INTEGER); """
     cursor.execute(create_questions_table_query)

@@ -135,7 +135,7 @@ def add_question():
 
         # assuming types already added
 
-@app.route("/delete_question/<int:question_id>", methods=["POST"])
+@app.route("/delete_question/<int:question_id>", methods=["DELETE"])
 def delete_question(question_id):
     with db.getconn() as connection:
         cursor = connection.cursor()

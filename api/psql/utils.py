@@ -150,3 +150,10 @@ def insert_answer(patient_id, answer, question_id, station_id, conn: connection)
     conn.commit()
     count = cursor.rowcount
     print(count, "Record inserted successfully into answer table")
+
+
+def copy_query_to_file(query: str, file, conn: connection) -> None:
+    """Copies results from a query into a file-like object, in csv format."""
+    q = f"COPY {query} TO STDOUT WITH CSV HEADER"
+    cursor = conn.cursor()
+    cursor.copy_expert(q, file)

@@ -140,32 +140,6 @@ def delete_question(question_id):
     with db.getconn() as connection:
         cursor = connection.cursor()
 
-        # data = request.get_json()
-        # print(data)
-
-        # station_name = data["station_name"]
-        # question_num = data["question_number"]
-
-        # question_id_query = (
-        #     """SELECT question_id FROM question WHERE station_name = %s AND question_num = %s"""
-        # )
-
-        # question_data = (
-        #    station_name,
-        #    question_num
-        #)
-
-        # cursor.execute(question_id_query, question_data)
-
-        #question_id = cursor.fetchall()#[0][0]
-
-        #if not question_id:
-        #    return "question doesn't exist"
-
-        #question_id = question_id[0][0]
-
-        #connection.commit()
-
         # Delete question
         delete_question_query = (
             """DELETE FROM question WHERE question_id = {0}""".format(question_id)

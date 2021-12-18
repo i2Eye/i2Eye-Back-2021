@@ -1,7 +1,54 @@
+import json
 from flask import current_app as app
 from flask import request
 
 from api.psql import db
+
+@app.route("/add_station", methods=["POST"])
+def add_station():
+    with db.getconn() as connection:
+        cursor = connection.cursor()
+
+        data = request.get_json()
+        print(data)
+
+        station_name = data["station_name"]
+
+        insert_station_query = (
+            """INSERT INTO station (station_id, availability, station_name) 
+                VALUES (DEFAULT, true, %s) RETURNING station_id"""
+        )
+
+        station_to_insert = (station_name,)
+
+        cursor.execute(insert_station_query, station_to_insert)
+        connection.commit()
+
+        station_id = cursor.fetchall()[0][0]
+
+        print("Successful addition of station.")
+        # "Station `{}` is added".format(station_name)
+        return json.dumps({"station_id": station_id})
+
+        # {"station_name": "Registration"}
+
+        # returns {"station_id": 1}
+
+
+@app.route("/delete_station/<int:station_id>", methods=["DELETE"])
+def delete_station(station_id):
+    with db.getconn() as connection:
+        cursor = connection.cursor()
+
+        # Delete station
+        delete_station_query = (
+            """DELETE FROM station WHERE station_id = {0}""".format(station_id)
+        )
+        cursor.execute(delete_station_query)
+        connection.commit()
+        print("station deleted from station table")
+
+        return "station successfully deleted"
 
 
 @app.route("/get_availability", methods=["GET"])
@@ -26,7 +73,7 @@ def get_station_availability():
         # 'Post campaign survey': True,
         # 'Registration': False}
 
-        return results
+        return json.dumps(results)
 
 
 @app.route("/set_availability", methods=["POST"])

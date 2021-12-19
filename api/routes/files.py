@@ -27,16 +27,6 @@ def get_questions_csv():
     return res
 
 
-@app.route("/registration.csv", methods=["GET"])
-def get_registration_csv():
-    buf = StringIO()
-    with db.getconn() as conn:
-        copy_query_to_file("registration", buf, conn)
-        buf.flush() 
-    res = Response(buf.getvalue(), status=200, mimetype="text/csv")
-    res.headers.set("Content-Disposition", "attachment", filename="registration.csv")
-    return res
-
 
 @app.route("/stations.csv", methods=["GET"])
 def get_stations_csv():
@@ -46,4 +36,25 @@ def get_stations_csv():
         buf.flush() 
     res = Response(buf.getvalue(), status=200, mimetype="text/csv")
     res.headers.set("Content-Disposition", "attachment", filename="stations.csv")
+    return res
+
+
+@app.route("/answers.csv", methods=["GET"])
+def get_answers_csv():
+    buf = StringIO()
+    with db.getconn() as conn:
+        copy_query_to_file("answer", buf, conn)
+        buf.flush() 
+    res = Response(buf.getvalue(), status=200, mimetype="text/csv")
+    res.headers.set("Content-Disposition", "attachment", filename="answers.csv")
+    return res
+
+@app.route("/types.csv", methods=["GET"])
+def get_types_csv():
+    buf = StringIO()
+    with db.getconn() as conn:
+        copy_query_to_file("type", buf, conn)
+        buf.flush() 
+    res = Response(buf.getvalue(), status=200, mimetype="text/csv")
+    res.headers.set("Content-Disposition", "attachment", filename="types.csv")
     return res

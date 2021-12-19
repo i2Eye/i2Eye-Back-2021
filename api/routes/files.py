@@ -15,3 +15,13 @@ def serve_patients_csv():
     res = Response(buf.getvalue(), status=200, mimetype="text/csv")
     res.headers.set("Content-Disposition", "attachment", filename="patients.csv")
     return res
+
+@app.route("/questions.csv", methods=["GET"])
+def get_questions_csv():
+    buf = StringIO()
+    with db.getconn() as conn:
+        copy_query_to_file("question", buf, conn)
+        buf.flush() 
+    res = Response(buf.getvalue(), status=200, mimetype="text/csv")
+    res.headers.set("Content-Disposition", "attachment", filename="questions.csv")
+    return res

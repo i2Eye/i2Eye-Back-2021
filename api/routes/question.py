@@ -135,10 +135,52 @@ def add_question():
 
         # assuming types already added
 
-@app.route("/delete_question/<int:question_id>", methods=["DELETE"])
-def delete_question(question_id):
+@app.route("/delete_question", methods=["DELETE"])
+def delete_question():
     with db.getconn() as connection:
         cursor = connection.cursor()
+
+        data = request.get_json()
+        print(data)
+
+        station_name = data["station_name"]
+        question_num = data["question_number"]
+
+        station_id_query = (
+                """SELECT station_id FROM station WHERE station_name = '{0}'""".format(
+                    station_name
+                )
+        )
+
+        cursor.execute(station_id_query)
+        station_id = cursor.fetchall()#[0][0]
+
+        if not station_id:
+            return "station doesn't exist"
+
+        station_id = station_id[0][0]
+
+        connection.commit()
+
+        question_id_query = (
+            """SELECT question_id FROM question WHERE Station_id = %s AND question_num = %s"""
+        )
+
+        question_data = (
+           station_id,
+           question_num
+        )
+
+        cursor.execute(question_id_query, question_data)
+
+        question_id = cursor.fetchall()#[0][0]
+
+        if not question_id:
+            return "question doesn't exist"
+
+        question_id = question_id[0][0]
+
+        connection.commit()
 
         # Delete question
         delete_question_query = (
@@ -150,4 +192,101 @@ def delete_question(question_id):
 
         return "question successfully deleted"
 
+        # {
+        #    "station_name": "Registration",
+        #    "question_number": 1,
+        # }
 
+
+@app.route("/update_question", methods=["PATCH"])
+def update_question():
+    with db.getconn() as connection:
+        cursor = connection.cursor()
+
+        data = request.get_json()
+        print(data)
+
+        station_name = data["station_name"]
+        questions = data["questions"]
+
+        station_id_query = (
+                """SELECT station_id FROM station WHERE station_name = '{0}'""".format(
+                    station_name
+                )
+        )
+
+        cursor.execute(station_id_query)
+        station_id = cursor.fetchall()#[0][0]
+
+        if not station_id:
+            return "station doesn't exist"
+
+        station_id = station_id[0][0]
+
+        connection.commit()
+
+
+        count = 0
+
+        for q in questions:
+            question_num = q["question_number"]
+            question = q["question"]
+            type = q["type"]
+            is_required = q["required"]
+            options = q["options"]
+
+            #print(q)
+
+            type_id_query = (
+            """SELECT type_id FROM type WHERE type_info = '{0}'""".format(
+                    type
+                )
+            )
+
+            cursor.execute(type_id_query)
+            type_id = cursor.fetchall()#[0][0]
+
+            if not type_id:
+                return "type doesn't exist"
+
+            type_id = type_id[0][0]
+
+            connection.commit()
+
+            postgres_update_query = (
+                """ UPDATE question SET question = %s, type_id = %s, required = %s, options = %s 
+                    WHERE station_id = %s AND question_num = %s"""
+            )
+            record_to_update = (
+                question,
+                type_id,
+                is_required,
+                options,
+                station_id,
+                question_num
+            )
+            cursor.execute(postgres_update_query, record_to_update)
+            connection.commit()
+            count = count + 1
+            print("ok")
+
+        print(str(count) + " questions updated")
+
+        return "questions updated for station {}".format(str(station_name))
+
+    # {"station_name": "Registration",
+    #"questions": [ 
+    #    {"question_number": 1, 
+    #       "question": "testing", 
+    #       "type": "text", 
+    #       "required": true, 
+    #       "options": ["one", "two", "three"]
+    #    }, 
+    #    {"question_number": 2, 
+    #       "question": "testing2", 
+    #       "type": "text", 
+    #       "required": true, 
+    #       "options": ["one", "two", "three"]
+    #    }
+    #    ] 
+    #}

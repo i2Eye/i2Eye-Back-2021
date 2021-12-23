@@ -35,21 +35,28 @@ def add_station():
         # returns {"station_id": 1}
 
 
-@app.route("/delete_station/<int:station_id>", methods=["DELETE"])
-def delete_station(station_id):
+@app.route("/delete_station", methods=["DELETE"])
+def delete_station():
     with db.getconn() as connection:
         cursor = connection.cursor()
 
+        data = request.get_json()
+        print(data)
+
+        station_name = data["station_name"]
+
         # Delete station
         delete_station_query = (
-            """DELETE FROM station WHERE station_id = {0}""".format(station_id)
+            """DELETE FROM station WHERE station_name = %s"""
         )
-        cursor.execute(delete_station_query)
+
+        station_to_delete = (station_name,)
+
+        cursor.execute(delete_station_query, station_to_delete)
         connection.commit()
         print("station deleted from station table")
 
         return "station successfully deleted"
-
 
 @app.route("/get_availability", methods=["GET"])
 def get_station_availability():
@@ -97,3 +104,39 @@ def set_availability():
             print("ok")
 
         return "Availability of {} station set to {}".format(key, str(value))
+
+    # {"name": true}
+
+
+@app.route("/update_station", methods=["PATCH"])
+def update_station():
+    with db.getconn() as connection:
+        cursor = connection.cursor()
+
+        data = request.get_json()
+        print(data)
+
+        station_name = data["station_name"]
+        new_station_name = data["new_station_name"]
+
+        station_id_query = (
+            """SELECT station_id FROM station WHERE station_name = %s"""
+        )
+        station_to_get = (station_name,)
+        cursor.execute(station_id_query, station_to_get)
+        station_id = cursor.fetchall()[0]
+
+        station_update_query = """UPDATE station SET station_name = %s WHERE station_id = %s"""
+        station_to_update = (
+            new_station_name,
+            station_id,
+        )
+        cursor.execute(station_update_query, station_to_update)
+        connection.commit()
+
+        return "Data successfully updated"
+
+        # {
+        #    "station_name": "Registration",
+        #    "new_station_name": "Reg2"
+        # }

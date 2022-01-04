@@ -16,6 +16,8 @@ services:
       interval: 2s
       timeout: 10s
       retries: 5
+    volumes:
+      - ./seed.sql:/sql/seed.sql
 
   migrate:
     image: migrate/migrate

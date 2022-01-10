@@ -1,3 +1,4 @@
+from openpyxl import Workbook
 from psycopg2.extensions import connection
 
 from . import db
@@ -153,3 +154,60 @@ def insert_answer(patient_id, answer, question_id, station_id, conn: connection)
     conn.commit()
     count = cursor.rowcount
     print(count, "Record inserted successfully into answer table")
+
+
+def copy_query_to_file(query: str, file, conn: connection) -> None:
+    """Copies results from a query into a file-like object, in csv format."""
+    q = f"COPY {query} TO STDOUT WITH CSV HEADER"
+    cursor = conn.cursor()
+    cursor.copy_expert(q, file)
+
+
+def to_xlsx(conn: connection):
+    """to_xlsx returns a openpyxl Workbook object.
+
+    Each station is its own sheet. The first column of each
+    sheet contains the questions at that station. Each subsequent
+    column represents a single patient's responses to the
+    questions. The patient's column is given by patient_id+1, and
+    this is shared across worksheets.
+    """
+    wb = Workbook()
+    cursor = conn.cursor()
+
+    # take all station names first to create the worksheets
+    cursor.execute("select distinct station_id, station_name from station;")
+    res = cursor.fetchall()
+    station_ids = [x[0] for x in res]
+    station_names = [x[1] for x in res]
+    for sname in station_names:
+        wb.create_sheet(sname)
+
+    # now grab the remaining data for each station
+    for (sid, sname) in zip(station_ids, station_names):
+        cursor.execute(
+            f"""
+        select q.question_id, q.question, a.answer, a.patient_id
+        from question q inner join answer a
+        on q.question_id=a.question_id
+        where q.station_id={sid}
+        order by q.question_id;
+        """
+        )
+        res = cursor.fetchall()
+        ws = wb.get_sheet_by_name(sname)
+
+        # create a map from qid to the row num, so that rows
+        # are flushed to the top
+        qmap = {}
+        for (i, qid) in enumerate({x[0] for x in res}):
+            qmap[qid] = i + 1
+
+        for (qid, q) in {(x[0], x[1]) for x in res}:
+            ws.cell(row=qmap[qid], column=1, value=q)
+
+        for x in res:
+            qid, ans, pid = x[0], x[2], x[3]
+            ws.cell(row=qmap[qid], column=pid + 1, value=ans)
+
+    return wb

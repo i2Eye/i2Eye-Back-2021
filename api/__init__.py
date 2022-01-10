@@ -7,10 +7,6 @@ def create_app(config: str = "config.DevConfig"):
     app.config.from_object(config)
 
     with app.app_context():
-        from api.psql.utils import db_setup
-
         from . import routes  # noqa: F401
-
-        db_setup()
 
         return app

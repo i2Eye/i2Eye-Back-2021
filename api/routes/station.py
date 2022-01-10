@@ -1,7 +1,6 @@
+from api.psql import db
 from flask import current_app as app
 from flask import request
-
-from api.psql import db
 
 
 @app.route("/get_availability", methods=["GET"])
@@ -9,7 +8,7 @@ def get_station_availability():
     with db.getconn() as connection:
         cursor = connection.cursor()
 
-        postgres_select_query = """SELECT station_name, availability FROM station"""
+        postgres_select_query = """SELECT station_name, available FROM station"""
         cursor.execute(postgres_select_query)
         connection.commit()
 
@@ -38,7 +37,7 @@ def set_availability():
         print(data)
         for key, value in data.items():
             postgres_select_query = (
-                """ UPDATE station SET availability = %s WHERE station_name = %s"""
+                """UPDATE station SET available = %s WHERE station_name = %s"""
             )
             record_to_select = (
                 value,

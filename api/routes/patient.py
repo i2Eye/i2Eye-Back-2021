@@ -1,10 +1,9 @@
 import json
 
 import psycopg2
+from api.psql import db
 from flask import current_app as app
 from flask import request
-
-from api.psql import db
 
 
 @app.route("/get_all_patients", methods=["GET"])
@@ -90,7 +89,7 @@ def get_all_patients():
                 this_patient_data.update({station_name: outcome})
 
             availability_query = (
-                """SELECT status from patient WHERE patient_id = {0}""".format(id)
+                """SELECT available from patient WHERE patient_id = {0}""".format(id)
             )
             cursor.execute(availability_query)
             connection.commit()
@@ -231,8 +230,8 @@ def delete_patient(patient_id):
         return "patient successfully deleted"
 
 
-@app.route("/update_patient_status", methods=["POST"])
-def update_patient_status():
+@app.route("/set_patient_availability", methods=["POST"])
+def set_patient_availability():
     with db.getconn() as connection:
         cursor = connection.cursor()
 
@@ -245,16 +244,16 @@ def update_patient_status():
                 patient_id = value
 
             if key == "boolean":
-                patient_status = value
+                available = value
 
             # print(key)
             # print(value)
 
         postgres_update_query = (
-            """ UPDATE patient SET status = %s WHERE patient_id = %s"""
+            """ UPDATE patient SET available = %s WHERE patient_id = %s"""
         )
         record_to_update = (
-            patient_status,
+            available,
             patient_id,
         )
         cursor.execute(postgres_update_query, record_to_update)

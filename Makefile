@@ -11,4 +11,4 @@ down:
 	export POSTGRES_URL=$(POSTGRES_URL)
 	migrate -database ${POSTGRES_URL} -path migrations down
 seed:
-	docker exec -it i2eye-back-2021-db-1 psql -U postgres -f /sql/seed.sql
+	docker exec -it i2eye-back-2021_db_1 psql -U postgres -f /sql/seed.sql
